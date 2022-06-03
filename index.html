@@ -9,21 +9,21 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
     <!-- css 파일 불러오기 -->
     <link href="./css/index.css" rel="stylesheet" type="text/css" />
-
-</head>
+    <link rel="shortcut icon" href="./img/favicon.ico">
+  </head>
 <body>
   <!-- navbar -->
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">동물상 테스트</a>
+      <a class="navbar-brand" href="index.html">동물상 테스트</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-          <a class="nav-link active" aria-current="page" href="#">Home</a>
-          <a class="nav-link" href="#">Features</a>
-          <a class="nav-link" href="#">Pricing</a>
+          <a class="nav-link" href="project.html">프로젝트 소개</a>
+          <a class="nav-link" href="source.html">사용 자원</a>
+          <a class="nav-link" href="https://github.com/Huiri/AnimalFaceWEB">소스코드</a>
         </div>
       </div>
     </div>
@@ -46,6 +46,10 @@
   <div class="file-upload-content">
     <img class="file-upload-image" id = "face-image" src="#" alt="your image" />
     <p class="result-message"></p>
+    <!-- <div class="circle_progress">
+      <span class="left"><span class ="bar"></span></span>
+      <span class="right"><span class ="bar"></span></span>
+    </div> -->
     <div id="label-container"class="d-flex flex-column justify-content-around"></div>
     <div id="addThis" class="addthis_inline_share_toolbox_6lz1"></div>
     <!-- <div id="label-container" class="d-flex flex-column justify-content-around"> 
@@ -128,25 +132,55 @@
         const prediction = await model.predict(image);
         prediction.sort((a, b) => parseFloat(b.probability) - parseFloat(a.probability));
         switch(prediction[0].className) {
-          case "강아지":
+          case "dog":
             resultMessage = "강아지상"
             break;
-          case "토끼":
+          case "rabbit":
             resultMessage = "토끼상"
             break;
-          case "고양이":
+          case "cat":
             resultMessage = "고양이상"
             break;
           default:
             resultMessage = "누구지상"
         }
         $('.result-message').html(resultMessage);
-        for (let i = 0; i < maxPredictions; i++) {
-            const classPrediction =
-                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-            labelContainer.childNodes[i].innerHTML = classPrediction;
-        }
-    }
+        var barWidth;
+          for (let i = 0; i < maxPredictions; i++) {
+              if (prediction[i].probability.toFixed(2) > 0.1) {
+                  barWidth = Math.round(prediction[i].probability.toFixed(2) * 100) + "%";
+              } else if (prediction[i].probability.toFixed(2) >= 0.01) {
+                  barWidth = "4%"
+              } else {
+                  barWidth = "2%"
+              }
+              var labelTitle;
+              switch (prediction[i].className) {
+                  case "dog":
+                      labelTitle = "강아지상"
+                      break;
+                  case "cat":
+                      labelTitle = "고양이상"
+                      break;
+                  case "rabbit":
+                      labelTitle = "토끼상"
+                      break;
+                  default:
+                      labelTitle = "알수없음"
+              }
+              var label = "<div class='animal-label d-flex align-items-center'>" + labelTitle + "</div>"
+              var bar = "<div class='bar-container position-relative container'><div class='" + prediction[i].className + "-box'></div><div class='d-flex justify-content-center align-items-center " + prediction[i].className + "-bar' style='width: " + barWidth + "'><span class='d-block percent-text'>" + Math.round(prediction[i].probability.toFixed(2) * 100) + "%</span></div></div>"
+              labelContainer.childNodes[i].innerHTML = label + bar;
+          }
+      }
+        // for (let i = 0; i < maxPredictions; i++) {
+        //   labelContainer.appendChild(document.createElement("div"));
+        //   // labelContainer.childNodes[i].innerHTML = 
+        //     const classPrediction =
+        //         prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        //     labelContainer.childNodes[i].innerHTML = classPrediction;
+        // }
+    
     function readURL(input) {
   if (input.files && input.files[0]) {
 
